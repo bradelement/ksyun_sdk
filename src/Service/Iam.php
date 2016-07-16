@@ -12,25 +12,32 @@ class Iam extends V4Curl
             'config' => [
                 'headers' => [
                 ],
-                /*
                 'v4_credentials' => [
-                    'ak' => 'AKLT2mjX47yFSp2leXlY8h0dVA',
-                    'sk' => 'ODFsox160Mo4Qz3PX5zyYmIbmxFx4qhfbRBxtBH7urMolwxLxUdUoN+oPt5lRaMt8w==',
-                    'region' => 'cn-beijing-1',
+                    'region' => 'cn-beijing-6',
                     'service' => 'iam',
                 ],
-                 */
             ],
         ];
     }
 
     protected $apiList = [
-        'temp' => [
+        'CreateUser' => [
             'url' => '/',
             'method' => 'get',
             'config' => [
                 'query' => [
-                    'Action' => 'CreateTempAK',
+                    'Action' => 'CreateUser',
+                    'Version' => '2015-11-01',
+                ],
+            ],
+        ],
+        'ListUsers' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'ListUsers',
+                    'Version' => '2015-11-01',
                 ],
             ],
         ],
