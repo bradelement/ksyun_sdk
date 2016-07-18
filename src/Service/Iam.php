@@ -11,6 +11,7 @@ class Iam extends V4Curl
             'timeout' => 5,
             'config' => [
                 'headers' => [
+                    'Accept' => 'application/json'
                 ],
                 'v4_credentials' => [
                     'region' => 'cn-beijing-6',

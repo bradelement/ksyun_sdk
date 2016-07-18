@@ -24,7 +24,6 @@ abstract class BaseCurl extends Singleton
     {
         $this->stack = new HandlerStack();
         $this->stack->setHandler(new CurlHandler());
-        $this->stack->push($this->logRpc());
 
         $config = $this->getConfig();
         $env = $config['host'] . 'Host';
@@ -50,14 +49,14 @@ abstract class BaseCurl extends Singleton
         $method = $info['method'];
         try {
             $response = $this->client->request($method, $info['url'], $info['config']);
-            $result = (string)$response->getBody();
-            $httpCode = $response->getStatusCode();
+            //$result = (string)$response->getBody();
+            //$httpCode = $response->getStatusCode();
+            return $response;
         }catch(ClientException $exception) {
-            $result = (string)$exception->getResponse()->getBody();
-            $httpCode = $exception->getResponse()->getStatusCode();
+            //$result = (string)$exception->getResponse()->getBody();
+            //$httpCode = $exception->getResponse()->getStatusCode();
+            return $exception->getResponse();
         }
-
-        return [$result, $httpCode];
     }
 
     private function configMerge($c1, $c2, $c3)
@@ -98,77 +97,5 @@ abstract class BaseCurl extends Singleton
             }, $url);
             $options['url'] = $url;
         }
-    }
-
-    protected function logRpc()
-    {   
-        return function(callable $handler) {
-            return function(RequestInterface $request, array $options)
-            use ($handler) {
-                $promise = $handler($request, $options);
-                $spent = new RunTimeUtil();
-                $spent->start();
-                return $promise->then(
-                    function (ResponseInterface $response) use ($request, $spent) {
-                        $cost = $spent->spent();
-                        $req = $this->logRequest($request);
-                        $res = $this->logResponse($response);
-                        $log = array_merge($req, $res, ['requestId#' . REQUEST_ID, 'cost#' . $cost]);
-                        Log::info('curl', implode('#|', $log));
-                        return $response;
-                    }   
-                );  
-            };  
-        };  
-    }
-
-    protected function logRequest(RequestInterface $r)
-    {
-        $arr = ['curl', '-X'];
-        $arr[] = $r->getMethod();
-        foreach ($r->getHeaders() as $name=>$values) {
-            foreach ($values as $value) {
-                $arr[] = '-H';
-                $arr[] = "'$name:$value'";
-            }
-        }
-        $body = (string)$r->getBody();
-        if ($body) {
-            $arr[] = '-d';
-            $arr[] = "'$body'";
-        }
-        $uri = (string)$r->getUri();
-        $arr[] = "'$uri'";
-
-        $log = [
-            'curl#' . implode(' ', $arr)
-        ];
-        return $log;
-    }
-
-    protected function logResponse(ResponseInterface $response)
-    {
-        return [
-            'httpCode#' . $response->getStatusCode(),
-            'reasonPhrase' . $response->getReasonPhrase(),
-            'response#' . (string)$response->getBody(),
-        ];
-    }
-
-
-    /**
-     * fn1 => function(RequestInterface $request, $options) => RequestInterface
-     * fn2 => function(ResponseInterface $response) => ResponseInterface
-     */
-    protected static function mapRequestAndResponse(callable $fn1, callable $fn2)
-    {
-        return function(callable $handler) use($fn1, $fn2)
-        {
-            return function ($request, array $options) use ($handler, $fn1, $fn2) 
-            {
-                $promise = $handler($fn1($request, $options), $options);
-                return $promise->then($fn2);
-            };
-        };
     }
 }

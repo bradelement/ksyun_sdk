@@ -17,14 +17,11 @@ abstract class V4Curl extends BaseCurl
         $this->stack = new HandlerStack();
         $this->stack->setHandler(new CurlHandler());
         $this->stack->push($this->v4Sign());
-        $this->stack->push($this->logRpc());
 
         $config = $this->getConfig();
-        $env = $config['host'] . 'Host';
-
         $this->client = new Client([
             'handler' => $this->stack,
-            'base_uri' => $this->$env,
+            'base_uri' => $config['host'],
         ]);
     }
 
@@ -34,6 +31,12 @@ abstract class V4Curl extends BaseCurl
             return function (RequestInterface $request, array $options) use ($handler) {
                 $v4 = new SignatureV4();
                 $credentials = $options['v4_credentials'];
+                if (!isset($credentials['ak']) || !isset($credentials['sk'])) {
+                    $json = json_decode(file_get_contents(getenv('HOME') . '/.ksyun/config'), true);
+                    if (is_array($json) && isset($json['ak']) && isset($json['sk'])) {
+                        $credentials = array_merge($credentials, $json);
+                    }
+                }
                 $request = $v4->signRequest($request, $credentials);
                 return $handler($request, $options);
             };
