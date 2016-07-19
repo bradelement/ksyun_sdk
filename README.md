@@ -22,7 +22,10 @@ composer require maigoxin/ksyun_sdk
 ##功能列表
 - [IAM](http://www.ksyun.com/doc/art/id/1663)
 - [KEC](http://www.ksyun.com/doc/art/id/1660)
-- [EIP]()
+- [EIP](http://www.ksyun.com/doc/art/id/1659)
+- [VPC](http://www.ksyun.com/doc/art/id/1661)
+- [SLB](http://www.ksyun.com/doc/art/id/1662)
+
 >敬请期待
 
 ##推荐demo
