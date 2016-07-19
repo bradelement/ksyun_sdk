@@ -31,12 +31,112 @@ class Eip extends V4Curl
     }
 
     protected $apiList = [
+        'GetLines' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'GetLines',
+                    'Version' => '2016-03-04'
+                ]
+            ],
+        ],
+        'AllocateAddress' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'AllocateAddress',
+                    'Version' => '2016-03-04'
+                ]
+            ],
+        ],
+        'ReleaseAddress' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'ReleaseAddress',
+                    'Version' => '2016-03-04'
+                ]
+            ],
+        ],
+        'AssociateAddress' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'AssociateAddress',
+                    'Version' => '2016-03-04'
+                ]
+            ],
+        ],
+        'DisassociateAddress' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'DisassociateAddress',
+                    'Version' => '2016-03-04'
+                ]
+            ],
+        ],
         'DescribeAddresses' => [
             'url' => '/',
             'method' => 'get',
             'config' => [
                 'query' => [
                     'Action' => 'DescribeAddresses',
+                    'Version' => '2016-03-04'
+                ]
+            ],
+        ],
+        'ModifyAddress' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'ModifyAddress',
+                    'Version' => '2016-03-04'
+                ]
+            ],
+        ],
+        'AssociateAddressPortfwd' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'AssociateAddressPortfwd',
+                    'Version' => '2016-03-04'
+                ]
+            ],
+        ],
+        'DisassociateAddressPortfwd' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'DisassociateAddressPortfwd',
+                    'Version' => '2016-03-04'
+                ]
+            ],
+        ],
+        'ModifyAddressPortfwd' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'ModifyAddressPortfwd',
+                    'Version' => '2016-03-04'
+                ]
+            ],
+        ],
+        'DescribeAddressPortfwds' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'DescribeAddressPortfwds',
                     'Version' => '2016-03-04'
                 ]
             ],

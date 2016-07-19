@@ -22,6 +22,7 @@ composer require maigoxin/ksyun_sdk
 ##功能列表
 - [IAM](http://www.ksyun.com/doc/art/id/1663)
 - [KEC](http://www.ksyun.com/doc/art/id/1660)
+- [EIP]()
 >敬请期待
 
 ##推荐demo
@@ -30,6 +31,22 @@ composer require maigoxin/ksyun_sdk
 require('./vendor/autoload.php');
 use Ksyun\Service\Iam;
 $response = Iam::getInstance()->request('ListUsers');
+echo (string)$response->getBody();
+```
+
+```
+<?php
+require('./vendor/autoload.php');
+use Ksyun\Service\Kec;
+$response = Kec::getInstance()->request('DescribeInstances', [], 'cn-beijing-6');
+echo (string)$response->getBody();
+```
+
+```
+<?php
+require('./vendor/autoload.php');
+use Ksyun\Service\Eip;
+$response = Eip::getInstance()->request('DescribeAddresses', ['query' => ['MaxResults' => 10]], 'cn-beijing-6');
 echo (string)$response->getBody();
 ```
 ##联合开发方案
