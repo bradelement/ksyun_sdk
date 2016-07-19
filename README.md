@@ -21,6 +21,7 @@ composer require maigoxin/ksyun_sdk
 
 ##功能列表
 - [IAM](http://www.ksyun.com/doc/art/id/1663)
+- [KEC](http://www.ksyun.com/doc/art/id/1660)
 >敬请期待
 
 ##推荐demo
