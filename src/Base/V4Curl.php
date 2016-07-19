@@ -16,6 +16,7 @@ abstract class V4Curl extends BaseCurl
     {
         $this->stack = new HandlerStack();
         $this->stack->setHandler(new CurlHandler());
+        $this->stack->push($this->replaceUri());
         $this->stack->push($this->v4Sign());
 
         $config = $this->getConfig();

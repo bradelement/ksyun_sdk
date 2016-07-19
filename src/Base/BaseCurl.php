@@ -5,8 +5,10 @@
 namespace Ksyun\Base;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\HandlerStack;
+use Psr\Http\Message\UriInterface;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\Exception\ClientException;
 use Psr\Http\Message\RequestInterface;
@@ -24,13 +26,12 @@ abstract class BaseCurl extends Singleton
     {
         $this->stack = new HandlerStack();
         $this->stack->setHandler(new CurlHandler());
+        $this->stack->push($this->replaceUri());
 
         $config = $this->getConfig();
-        $env = $config['host'] . 'Host';
-
         $this->client = new Client([
             'handler' => $this->stack,
-            'base_uri' => $this->$env,
+            'base_uri' => $config['host'],
         ]);
     }
 
@@ -44,17 +45,13 @@ abstract class BaseCurl extends Singleton
         $config = $this->configMerge($defaultConfig['config'], $config_api['config'], $config);
         $info = array_merge($defaultConfig, $config_api);
         $info['config'] = $config;
-        $this->replace($info);
+        //$this->replace($info);
 
         $method = $info['method'];
         try {
             $response = $this->client->request($method, $info['url'], $info['config']);
-            //$result = (string)$response->getBody();
-            //$httpCode = $response->getStatusCode();
             return $response;
         }catch(ClientException $exception) {
-            //$result = (string)$exception->getResponse()->getBody();
-            //$httpCode = $exception->getResponse()->getStatusCode();
             return $exception->getResponse();
         }
     }
@@ -71,7 +68,7 @@ abstract class BaseCurl extends Singleton
         }
 
         foreach ($c3 as $k=>$v) {
-            if (is_array($result[$k]) && is_array($v)) {
+            if (isset($result[$k]) && is_array($result[$k]) && is_array($v)) {
                 $result[$k] = array_merge($result[$k], $v);
             }else {
                 $result[$k] = $v;
@@ -80,11 +77,37 @@ abstract class BaseCurl extends Singleton
         return $result;
     }
 
+    protected function replaceUri()
+    {
+        return function (callable $handler) {
+            return function (RequestInterface $request, array $options) use ($handler) {
+                if (isset($options['replace'])) {
+                    $replace = $options['replace'];
+                    $uri = (string)$request->getUri();
+
+                    $func = function($matches) use($replace) {
+                        $key = substr($matches[0], 1, -1);
+                        return $replace[$key];
+                    };
+                    $uri = preg_replace_callback('/\{.*?\}/', $func, $uri);
+
+                    $func2 = function($matches) use($replace) {
+                        $key = substr($matches[0], 3, -3);
+                        return $replace[$key];
+                    };
+                    $uri = preg_replace_callback('/%7B.*?%7D/', $func2, $uri);
+                    $request = $request->withUri(new Uri($uri));
+                }
+                return $handler($request, $options);
+            };
+        };
+    }
+
     private function replace(&$options)
     {
         if (isset($options['config']['replace']) && is_array($options['config']['replace'])) {
             $url = $options['url'];
-            $params = $options['replace'];
+            $params = $options['config']['replace'];
             $url = preg_replace_callback('({[0-9a-zA-Z-_]+})', function($matched) use($params) {
                 $key = substr($matched[0], 1, strlen($matched[0]) - 2);
                 if (isset($params[$key])) {
